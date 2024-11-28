@@ -45,6 +45,7 @@ pydantic_core
 PyPDF2
 python-dateutil
 python-dotenv
+python-multipart
 pytz
 PyYAML
 qdrant-client

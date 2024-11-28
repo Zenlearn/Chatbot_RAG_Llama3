@@ -25,11 +25,10 @@ async def upload_document(file: UploadFile,singleChunk: bool = Query(False),prio
         if priority < 1 or priority > 5:
             raise Exception("Priority should be between 1 and 5")
         
-        print(">",singleChunk, priority)
         # * Extract text from file (supports PDF and plain text)
         file_content = extract_text(file)
         
-        print(len(file_content),">",file_content[:1000])
+        # print(len(file_content),">",file_content[:1000])
 
         # * Detect language of whole document
         detected_language = detect_language(file_content)
