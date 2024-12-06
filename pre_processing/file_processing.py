@@ -11,10 +11,12 @@ def extract_text(file: UploadFile) -> str:
     Extract text from an uploaded file (supports PDF and plain text).
     """
     if file.filename.endswith(".pdf"):
-        reader = PdfReader(file)
+        print("pdf")
+        reader = PdfReader(file.file)
         text = ""
         for page in reader.pages:
             text += " ".join(page.extract_text().replace("\n", ""))
+        print("pdf done")
         return text
 
     elif file.filename.endswith(".txt"):
