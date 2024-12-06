@@ -10,12 +10,16 @@ from services.query_model import QueryRequest
 
 app = FastAPI()
 
+
 @app.get("/")
 async def root():
     return {"message": "Welcome to the Document Search API!"}
 
+
 @app.post("/upload")
-async def upload_document(file: UploadFile,singleChunk: bool = Query(False),priority: int = Query(1)):
+async def upload_document(
+    file: UploadFile, singleChunk: bool = Query(False), priority: int = Query(1)
+):
     """
     Upload a document (PDF or text) and store it in chunks after processing.
     singleChunk: If True, the document will be processed in a single chunk. [Default: False] {Query Parameter}
@@ -24,10 +28,10 @@ async def upload_document(file: UploadFile,singleChunk: bool = Query(False),prio
     try:
         if priority < 1 or priority > 5:
             raise Exception("Priority should be between 1 and 5")
-        
+
         # * Extract text from file (supports PDF and plain text)
         file_content = extract_text(file)
-        
+
         # print(len(file_content),">",file_content[:1000])
 
         # * Detect language of whole document
@@ -36,8 +40,8 @@ async def upload_document(file: UploadFile,singleChunk: bool = Query(False),prio
         # * Chunk the text into smaller parts for vectorization
         if singleChunk == True:
             # Todo: Implement to handle large files [can add text summarization]
-            # if len(file_content) > 1000:
-            #     raise Exception("File is too large to be processed in a single chunk")
+            if len(file_content) >= 512:
+                raise Exception("File is too large to be processed in a single chunk, please set singleChunk to False")
             chunks = [file_content]
         else:
             chunks = chunk_text(file_content)
@@ -53,7 +57,6 @@ async def upload_document(file: UploadFile,singleChunk: bool = Query(False),prio
         document = add_document(chunks, embeddings, priority)
         doc_id = document["doc_id"]
         chunks_ids = document["chunks_ids"]
-        
 
         return {
             "message": "Document uploaded successfully",
@@ -76,7 +79,7 @@ async def query_document(body: QueryRequest):
     """
     try:
         query = body.query
-        
+
         # * Detect language of query
         detected_language = detect_language(query)
 
@@ -84,14 +87,17 @@ async def query_document(body: QueryRequest):
         if detected_language != "en":
             query = translate(query)
 
+        print("Query:", query)
         # * Generate embeddings for the query
         query_embedding = generate_embedding([query])[0]
+        print("Query Embedding:", query_embedding)
 
         # * Query the database for similar vectors
         vectors = query_db(query_embedding)
 
-        print(vectors)
+        print("Vectors:", vectors)
         output = prompt(query, vectors)
+        print("Output:", output)
 
         return {
             "message": "Query successful",
@@ -119,6 +125,7 @@ async def delete_document_route(doc_id: str):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 if __name__ == "__main__":
     uvicorn.run(UVICORN_APP, host=HOST, port=PORT, reload=RELOAD)
