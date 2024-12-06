@@ -13,7 +13,10 @@ app = FastAPI()
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to the Document Search API!"}
+    return {
+        "success": True,
+        "message": "Zenlearn AI coach: Your personalized guide to actionable insights and lifelong learning",
+    }
 
 
 @app.post("/upload")
@@ -41,7 +44,9 @@ async def upload_document(
         if singleChunk == True:
             # Todo: Implement to handle large files [can add text summarization]
             if len(file_content) >= 512:
-                raise Exception("File is too large to be processed in a single chunk, please set singleChunk to False")
+                raise Exception(
+                    "File is too large to be processed in a single chunk, please set singleChunk to False"
+                )
             chunks = [file_content]
         else:
             chunks = chunk_text(file_content)
