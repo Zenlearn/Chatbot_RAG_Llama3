@@ -7,16 +7,13 @@ from database.vector_db_manager import add_document, query_db, delete_document
 from llm.llm import prompt
 from config.config_env import UVICORN_APP, PORT, RELOAD, HOST
 from services.query_model import QueryRequest
-
+from flask import Flask, render_template
 app = FastAPI()
 
 
 @app.get("/")
 async def root():
-    return {
-        "success": True,
-        "message": "Zenlearn AI coach: Your personalized guide to actionable insights and lifelong learning",
-    }
+    return render_template('chat.html')
 
 
 @app.post("/upload")
