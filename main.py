@@ -7,9 +7,22 @@ from database.vector_db_manager import add_document, query_db, delete_document
 from llm.llm import prompt
 from config.config_env import UVICORN_APP, PORT, RELOAD, HOST
 from services.query_model import QueryRequest
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+origins = [
+    "http://localhost",
+    "https://suryansh-dey.github.io/",
+    "http://zenlearn.ai"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def root():
