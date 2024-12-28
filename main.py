@@ -55,7 +55,7 @@ async def upload_document(
         # * Chunk the text into smaller parts for vectorization
         if singleChunk == True:
             # Todo: Implement to handle large files [can add text summarization]
-            if len(file_content) >= 512:
+            if len(file_content) >= 256:
                 raise Exception(
                     "File is too large to be processed in a single chunk, please set singleChunk to False"
                 )
