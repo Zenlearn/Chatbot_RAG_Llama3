@@ -65,7 +65,9 @@ async def upload_document(
 
         # * Translate to English if necessary [Chunk by Chunk]
         if detected_language != "en":
-            chunks = [translate(chunk) for chunk in chunks]
+            #! Translation is disabled for now [Due to unavailablity of BHASHINI API key]
+            # chunks = [translate(chunk) for chunk in chunks]
+            pass
 
         # * Generate embeddings for each chunk
         embeddings = generate_embedding(chunks)
