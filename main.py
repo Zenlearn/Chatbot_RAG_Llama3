@@ -104,19 +104,21 @@ async def query_document(body: QueryRequest):
 
         # * Translate to English if necessary
         if detected_language != "en":
-            query = translate(query)
+            #! Translation is disabled for now [Due to unavailablity of BHASHINI API key]
+            # query = translate(query)
+            pass
 
-        print("Query:", query)
+        # print("Query:", query)
         # * Generate embeddings for the query
         query_embedding = generate_embedding([query])[0]
-        print("Query Embedding:", query_embedding)
+        # print("Query Embedding:", query_embedding)
 
         # * Query the database for similar vectors
         vectors = query_db(query_embedding)
 
-        print("Vectors:", vectors)
+        # print("Vectors:", vectors)
         output = prompt(query, vectors)
-        print("Output:", output)
+        # print("Output:", output)
 
         return {
             "message": "Query successful",
