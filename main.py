@@ -12,9 +12,8 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 origins = [
-    "http://localhost",
     "https://suryansh-dey.github.io/",
-    "http://zenlearn.ai"
+    "https://zenlearn.ai"
 ]
 
 app.add_middleware(
