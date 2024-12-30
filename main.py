@@ -2,8 +2,9 @@ import uvicorn
 from fastapi import FastAPI, UploadFile, Form, HTTPException, Query
 from pre_processing.file_processing import extract_text, chunk_text
 from services.translation import detect_language, translate
-from services.embedding import generate_embedding
-from database.vector_db_manager import add_document, query_db, delete_document
+# from services.embedding import generate_embedding #? Not required in ChromaDB
+# from database.qdrant_vector_db import add_document, query_db, delete_document #? Not required in ChromaDB
+from database.chromadb_vector_db import add_document, query_db, delete_document
 from llm.llm import prompt
 from config.config_env import UVICORN_APP, PORT, RELOAD, HOST
 from services.query_model import QueryRequest
@@ -47,10 +48,12 @@ async def upload_document(
         # * Extract text from file (supports PDF and plain text)
         file_content = extract_text(file)
 
-        # print(len(file_content),">",file_content[:1000])
+        print(len(file_content),">",file_content[:1000])
 
         # * Detect language of whole document
         detected_language = detect_language(file_content)
+        
+        print("Detected Language:", detected_language)
 
         # * Chunk the text into smaller parts for vectorization
         if singleChunk == True:
@@ -62,7 +65,7 @@ async def upload_document(
             chunks = [file_content]
         else:
             chunks = chunk_text(file_content)
-
+        
         # * Translate to English if necessary [Chunk by Chunk]
         if detected_language != "en":
             #! Translation is disabled for now [Due to unavailablity of BHASHINI API key]
@@ -70,19 +73,21 @@ async def upload_document(
             pass
 
         # * Generate embeddings for each chunk
-        embeddings = generate_embedding(chunks)
+        # embeddings = generate_embedding(chunks)
 
+        print("no of Chunks:", len(chunks))
         # * Add chunks to the vector database [Qdrant]
-        document = add_document(chunks, embeddings, priority)
+        document = add_document(chunks, priority)
+        print("Document:", document)
         doc_id = document["doc_id"]
-        chunks_ids = document["chunks_ids"]
+        # chunks_ids = document["chunks_ids"] #? Not required in ChromaDB
 
         return {
             "message": "Document uploaded successfully",
             "doc_id": doc_id,
             "chunks": {
                 "count": len(chunks),
-                "ids": chunks_ids,
+                # "ids": chunks_ids, #? Not required in ChromaDB
             },
             "detected_language": detected_language,
         }
@@ -108,13 +113,11 @@ async def query_document(body: QueryRequest):
             # query = translate(query)
             pass
 
-        # print("Query:", query)
         # * Generate embeddings for the query
-        query_embedding = generate_embedding([query])[0]
-        # print("Query Embedding:", query_embedding)
+        # query_embedding = generate_embedding([query])[0]
 
         # * Query the database for similar vectors
-        vectors = query_db(query_embedding)
+        vectors = query_db(query)
 
         # print("Vectors:", vectors)
         output = prompt(query, vectors)
