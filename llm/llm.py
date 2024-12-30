@@ -38,7 +38,7 @@ def llama3(prompt: str) -> str:
 def prompt(query: str, vectors: list[str]) -> str:
     if not vectors:
         vectors = ["No relevant vectors found in the database."]
-    
+    vectors = '\n'.join(vectors)
     prompt = f"""
 You are an AI coach helping mid-career professionals transition into management roles in MSMEs and mid-sized companies adapting to AI-driven changes. Focus on building foundational and advanced management skills, applying concepts to real-world scenarios, and aligning strategies with organizational goals.
 
@@ -62,7 +62,7 @@ Requirements:
 - For off-topic queries: "This is outside my expertise. I recommend exploring [relevant resource]."
 
 User Query: '{query}'
-Reference Vectors: [{'\n'.join(vectors)}]
+Reference Vectors: [{vectors}]
 
 Goal: Deliver actionable insights, foster critical thinking, and align responses with organizational goals.
 """
