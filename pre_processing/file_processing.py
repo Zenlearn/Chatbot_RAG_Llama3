@@ -14,24 +14,24 @@ def extract_text(file: UploadFile) -> str:
         reader = PdfReader(file.file)
         text = ""
         for page in reader.pages:
-            text += " ".join(page.extract_text().replace("\n", ""))
+            text += "".join(page.extract_text().replace("\n", " "))
         return text
 
     elif file.filename.endswith(".txt"):
-        return " ".join(file.file.read().decode("utf-8").replace("\n", ""))
+        return "".join(file.file.read().decode("utf-8").replace("\n", " "))
 
     elif file.filename.endswith(".xlsx"):
         data = pd.read_excel(file.file, sheet_name=None)
         text = ""
         for sheet_name, df in data.items():
-            text += " ".join(
-                df.fillna("").to_string(index=False, header=True).replace("\n", "")
+            text += "".join(
+                df.fillna("").to_string(index=False, header=True).replace("\n", " ")
             )
         return text
     elif file.filename.endswith(".docx"):
         file_content = file.file.read()
-        content = " ".join(
-            docx2txt.process(BytesIO(file_content)).replace("\n", "").split()
+        content = "".join(
+            docx2txt.process(BytesIO(file_content)).replace("\n", " ").split()
         )
         return content
     else:
@@ -42,8 +42,16 @@ def chunk_text(text: str) -> list[str]:
     """
     Split text into smaller chunks for vectorization.
     """
-    words = text.split()
+    print("Chunking text...", CHUNK_SIZE)
+    
+    # words = text.split()
+    # chunks = [
+    #     " ".join(words[i : i + CHUNK_SIZE]) for i in range(0, len(words), CHUNK_SIZE)
+    # ]
+    
+    letters = list(text)
     chunks = [
-        " ".join(words[i : i + CHUNK_SIZE]) for i in range(0, len(words), CHUNK_SIZE)
+        "".join(letters[i : i + CHUNK_SIZE]) for i in range(0, len(letters), CHUNK_SIZE)
     ]
+    print("Chunks:", len(chunks))
     return chunks
