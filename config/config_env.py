@@ -14,10 +14,16 @@ RELOAD = os.getenv("RELOAD", "true").lower() == "true"
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 500))
 VECTOR_QUERY_SIZE = int(os.getenv("VECTOR_QUERY_SIZE", 10))
 
+#* Qdrant Configuration
 QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")
 QDRANT_PORT = int(os.getenv("QDRANT_PORT", 6333))
 QDRANT_API_KEY= os.getenv("QDRANT_API_KEY")
 QDRANT_COLLECTION_NAME = os.getenv("QDRANT_COLLECTION_NAME", "default")
+
+#* ChromaDB Configuration
+CHROMA_DB_HOST = os.getenv("CHROMA_DB_HOST", "localhost")
+CHROMA_DB_PORT = int(os.getenv("CHROMA_DB_PORT", 8000))
+CHROMA_DB_COLLECTION_NAME= os.getenv("CHROMA_DB_COLLECTION_NAME", "test")
 
 #* Embedding Configuration [Sentence Transformers]
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
